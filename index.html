@@ -6,34 +6,9 @@
   <title>Reset Password</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 40px;
-      max-width: 600px;
-      margin: auto;
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    input, button {
-      display: block;
-      margin: 10px 0;
-      padding: 10px;
-      width: 100%;
-      max-width: 400px;
-    }
-    button {
-      background-color: #007aff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .message {
-      margin-top: 20px;
-      font-weight: bold;
-    }
+    body { font-family: sans-serif; padding: 40px; }
+    input, button { display: block; margin: 10px 0; padding: 10px; width: 100%; max-width: 400px; }
+    .message { margin-top: 20px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -44,9 +19,9 @@
   <div id="message" class="message"></div>
 
   <script>
-    const supabase = supabase.createClient(
-      "https://ezdbjkcrtepdihmyunzm.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZGJqa2NydGVwZGlobXl1bnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MTIxNzksImV4cCI6MjA2MjM4ODE3OX0.E2NntRtnywLcVUa15IJBO6sR_sH0kT_Kr-UcqzVo-Sw"
+    const supabaseClient = supabase.createClient(
+      'https://ezdbjkcrtepdihmyunzm.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZGJqa2NydGVwZGlobXl1bnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MTIxNzksImV4cCI6MjA2MjM4ODE3OX0.E2NntRtnywLcVUa15IJBO6sR_sH0kT_Kr-UcqzVo-Sw'
     );
 
     function isStrongPassword(password) {
@@ -57,48 +32,42 @@
     }
 
     async function handleReset() {
+      alert("Reset button clicked!");  // DEBUG ONLY
+
       const newPassword = document.getElementById("newPassword").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
       const message = document.getElementById("message");
 
       if (newPassword !== confirmPassword) {
-        message.textContent = "❌ Passwords do not match.";
+        message.textContent = "Passwords do not match.";
         return;
       }
 
       if (!isStrongPassword(newPassword)) {
-        message.textContent = "❌ Password must be at least 6 characters long, include an uppercase letter and a special symbol.";
+        message.textContent = "Password must be at least 6 characters long, contain an uppercase letter, and a special symbol.";
         return;
       }
 
       const hash = window.location.hash;
-      const params = new URLSearchParams(hash.substring(1));
-      const access_token = params.get("access_token");
-      const refresh_token = params.get("refresh_token");
-
-      if (!access_token || !refresh_token) {
-        message.textContent = "❌ Invalid or missing reset token.";
+      if (!hash.includes("access_token")) {
+        message.textContent = "Invalid reset link.";
         return;
       }
 
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token,
-        refresh_token
-      });
+      const access_token = new URLSearchParams(hash.substring(1)).get("access_token");
 
-      if (sessionError) {
-        message.textContent = "❌ Failed to set session: " + sessionError.message;
-        return;
-      }
+      const { data, error } = await supabaseClient.auth.updateUser(
+        { password: newPassword },
+        { accessToken: access_token }
+      );
 
-      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
-
-      if (updateError) {
-        message.textContent = "❌ Error updating password: " + updateError.message;
+      if (error) {
+        message.textContent = "Error: " + error.message;
       } else {
-        message.textContent = "✅ Password updated successfully!";
+        message.textContent = "Password updated successfully!";
       }
     }
   </script>
 </body>
 </html>
+
