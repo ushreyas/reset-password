@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Reset Password</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.39.6"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -39,13 +40,10 @@
   <h2>Reset Your Password</h2>
   <input type="password" id="newPassword" placeholder="New Password" />
   <input type="password" id="confirmPassword" placeholder="Confirm Password" />
-  <button id="resetBtn">Reset Password</button>
+  <button onclick="handleReset()">Reset Password</button>
   <div id="message" class="message"></div>
 
-  <!-- ✅ Import as an ES module using Skypack -->
-  <script type="module">
-    import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
-
+  <script>
     const supabase = createClient(
       'https://ezdbjkcrtepdihmyunzm.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZGJqa2NydGVwZGlobXl1bnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MTIxNzksImV4cCI6MjA2MjM4ODE3OX0.E2NntRtnywLcVUa15IJBO6sR_sH0kT_Kr-UcqzVo-Sw'
@@ -58,7 +56,7 @@
       return password.length >= minLength && hasUpperCase && hasSpecialChar;
     }
 
-    document.getElementById("resetBtn").addEventListener("click", async () => {
+    async function handleReset() {
       const newPassword = document.getElementById("newPassword").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
       const message = document.getElementById("message");
@@ -69,7 +67,7 @@
       }
 
       if (!isStrongPassword(newPassword)) {
-        message.textContent = "❌ Password must be at least 6 characters, contain an uppercase letter and a special symbol.";
+        message.textContent = "❌ Password must be at least 6 characters, include an uppercase letter and a special symbol.";
         return;
       }
 
@@ -93,14 +91,14 @@
         return;
       }
 
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword
-      });
+      const { error: updateError } = await supabase.auth.update({ password: newPassword });
 
-      message.textContent = updateError
-        ? "❌ Failed to update password: " + updateError.message
-        : "✅ Password updated successfully!";
-    });
+      if (updateError) {
+        message.textContent = "❌ Failed to update password: " + updateError.message;
+      } else {
+        message.textContent = "✅ Password updated successfully!";
+      }
+    }
   </script>
 </body>
 </html>
