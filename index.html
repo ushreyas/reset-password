@@ -162,8 +162,8 @@
     </div>
 
     <script>
-        // Initialize Supabase client (v1.35.7)
-        const supabaseClient = supabase.createClient(
+
+        const supabase = supabase.createClient(
             "https://ezdbjkcrtepdihmyunzm.supabase.co",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZGJqa2NydGVwZGlobXl1bnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MTIxNzksImV4cCI6MjA2MjM4ODE3OX0.E2NntRtnywLcVUa15IJBO6sR_sH0kT_Kr-UcqzVo-Sw"
         );
@@ -234,7 +234,7 @@
                 }
 
                 // Set the session with the tokens (v1.35.7)
-                const { error: sessionError } = await supabaseClient.auth.setSession(
+                const { error: sessionError } = await supabase.auth.setSession(
                     refresh_token,
                     access_token
                 );
@@ -246,7 +246,7 @@
                 }
 
                 // Update the password (v1.35.7)
-                const { error: updateError } = await supabaseClient.auth.update({ 
+                const { error: updateError } = await supabase.auth.update({ 
                     password: newPassword 
                 });
 
@@ -261,7 +261,7 @@
                     
                     // Optionally sign out to clear the session
                     setTimeout(async () => {
-                        await supabaseClient.auth.signOut();
+                        await supabase.auth.signOut();
                     }, 2000);
                 }
             } catch (error) {
