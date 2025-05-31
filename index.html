@@ -234,7 +234,7 @@
                 }
 
                 // Set the session with the tokens (v1.35.7)
-                const { error: sessionError } = await supabase.auth.setSession(
+                const { error: sessionError } = await supabase.auth.api.setSession(
                     refresh_token,
                     access_token
                 );
@@ -246,7 +246,7 @@
                 }
 
                 // Update the password (v1.35.7)
-                const { error: updateError } = await supabase.auth.update({ 
+                const { error: updateError } = await supabase.auth.api.update({ 
                     password: newPassword 
                 });
 
@@ -261,7 +261,7 @@
                     
                     // Optionally sign out to clear the session
                     setTimeout(async () => {
-                        await supabase.auth.signOut();
+                        await supabase.auth.api.signOut();
                     }, 2000);
                 }
             } catch (error) {
