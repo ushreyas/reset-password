@@ -44,7 +44,7 @@
   <button onclick="handleReset()">Reset Password</button>
   <div id="message" class="message"></div>
   <script>
-    const supabase = supabase.api.createClient(
+    const supabase = supabase.createClient(
       "https://ezdbjkcrtepdihmyunzm.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZGJqa2NydGVwZGlobXl1bnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MTIxNzksImV4cCI6MjA2MjM4ODE3OX0.E2NntRtnywLcVUa15IJBO6sR_sH0kT_Kr-UcqzVo-Sw"
     );
@@ -74,7 +74,7 @@
         message.textContent = "❌ Invalid or missing reset token.";
         return;
       }
-      const { error: sessionError } = await supabase.auth.api.setSession({
+      const { error: sessionError } = await supabase.auth.setSession({
         access_token,
         refresh_token
       });
@@ -82,7 +82,7 @@
         message.textContent = "❌ Failed to set session: " + sessionError.message;
         return;
       }
-      const { error: updateError } = await supabase.auth.api.updateUser({ password: newPassword });
+      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
       if (updateError) {
         message.textContent = "❌ Error updating password: " + updateError.message;
       } else {
