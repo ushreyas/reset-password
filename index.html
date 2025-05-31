@@ -4,83 +4,99 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Reset Password</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: sans-serif;
       padding: 40px;
-      max-width: 500px;
+      max-width: 600px;
       margin: auto;
-      background: #f9f9f9;
+    }
+    h2 {
+      margin-bottom: 20px;
     }
     input, button {
       display: block;
-      margin: 12px 0;
-      padding: 12px;
+      margin: 10px 0;
+      padding: 10px;
       width: 100%;
-      font-size: 16px;
+      max-width: 400px;
+    }
+    button {
+      background-color: #007aff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
     }
     .message {
-      margin-top: 16px;
+      margin-top: 20px;
       font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h2>🔐 Reset Your Password</h2>
+  <h2>Reset Your Password</h2>
   <input type="password" id="newPassword" placeholder="New Password" />
   <input type="password" id="confirmPassword" placeholder="Confirm Password" />
   <button onclick="handleReset()">Reset Password</button>
   <div id="message" class="message"></div>
 
   <script>
-    const supabase = window.supabase.createClient(
+    const supabase = supabase.createClient(
       "https://ezdbjkcrtepdihmyunzm.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZGJqa2NydGVwZGlobXl1bnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MTIxNzksImV4cCI6MjA2MjM4ODE3OX0.E2NntRtnywLcVUa15IJBO6sR_sH0kT_Kr-UcqzVo-Sw"
     );
 
-    function isStrongPassword(pw) {
-      const min = 6;
-      const hasUpper = /[A-Z]/.test(pw);
-      const hasSpecial = /[^A-Za-z0-9]/.test(pw);
-      return pw.length >= min && hasUpper && hasSpecial;
+    function isStrongPassword(password) {
+      const minLength = 6;
+      const hasUpperCase = /[A-Z]/.test(password);
+      const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
+      return password.length >= minLength && hasUpperCase && hasSpecialChar;
     }
 
     async function handleReset() {
-      const password = document.getElementById("newPassword").value;
-      const confirm = document.getElementById("confirmPassword").value;
+      const newPassword = document.getElementById("newPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
       const message = document.getElementById("message");
 
-      if (password !== confirm) {
+      if (newPassword !== confirmPassword) {
         message.textContent = "❌ Passwords do not match.";
         return;
       }
 
-      if (!isStrongPassword(password)) {
-        message.textContent = "❌ Password must be at least 6 characters, include uppercase and special character.";
+      if (!isStrongPassword(newPassword)) {
+        message.textContent = "❌ Password must be at least 6 characters long, include an uppercase letter and a special symbol.";
         return;
       }
 
       const hash = window.location.hash;
-      const access_token = new URLSearchParams(hash.substring(1)).get("access_token");
+      const params = new URLSearchParams(hash.substring(1));
+      const access_token = params.get("access_token");
+      const refresh_token = params.get("refresh_token");
 
-      if (!access_token) {
-        message.textContent = "❌ Invalid or missing access token.";
+      if (!access_token || !refresh_token) {
+        message.textContent = "❌ Invalid or missing reset token.";
         return;
       }
 
-      try {
-        const { data, error } = await supabase.auth.api.updateUser(access_token, { password });
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token,
+        refresh_token
+      });
 
-        if (error) {
-          console.error("Error updating password:", error);
-          message.textContent = "❌ Error: " + error.message;
-        } else {
-          message.textContent = "✅ Password updated successfully!";
-        }
-      } catch (err) {
-        console.error("Unexpected error:", err);
-        message.textContent = "❌ Unexpected error: " + err.message;
+      if (sessionError) {
+        message.textContent = "❌ Failed to set session: " + sessionError.message;
+        return;
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+
+      if (updateError) {
+        message.textContent = "❌ Error updating password: " + updateError.message;
+      } else {
+        message.textContent = "✅ Password updated successfully!";
       }
     }
   </script>
