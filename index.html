@@ -219,14 +219,16 @@
             setLoading(true);
 
             try {
-                // Get tokens from URL hash or search params
-                const urlParams = new URLSearchParams(window.location.search);
+                // Get tokens from URL hash (Supabase sends them in the hash fragment)
                 const hashParams = new URLSearchParams(window.location.hash.substring(1));
                 
-                const access_token = urlParams.get("access_token") || hashParams.get("access_token");
-                const refresh_token = urlParams.get("refresh_token") || hashParams.get("refresh_token");
+                const access_token = hashParams.get("access_token");
+                const refresh_token = hashParams.get("refresh_token");
+                const type = hashParams.get("type");
 
-                if (!access_token) {
+                console.log('Tokens from hash:', { access_token, refresh_token, type });
+
+                if (!access_token || type !== "recovery") {
                     showMessage("Invalid or expired reset link. Please request a new password reset.", "error");
                     return;
                 }
@@ -275,19 +277,32 @@
 
         // Check if we have the required tokens on page load
         window.addEventListener('load', () => {
+            // Log everything for debugging
+            console.log('Full URL:', window.location.href);
+            console.log('Hash:', window.location.hash);
+            console.log('Search:', window.location.search);
+            
             const urlParams = new URLSearchParams(window.location.search);
             const hashParams = new URLSearchParams(window.location.hash.substring(1));
             
-            const access_token = urlParams.get("access_token") || hashParams.get("access_token");
+            console.log('URL Params:', Array.from(urlParams.entries()));
+            console.log('Hash Params:', Array.from(hashParams.entries()));
             
-            if (!access_token) {
-                showMessage("Invalid reset link. Please request a new password reset from the app.", "error");
+            const access_token = urlParams.get("access_token") || hashParams.get("access_token");
+            const type = urlParams.get("type") || hashParams.get("type");
+            
+            console.log('Access Token:', access_token ? 'Found' : 'Not found');
+            console.log('Type:', type);
+            
+            if (!access_token || type !== "recovery") {
+                showMessage("Invalid reset link. Please request a new password reset from the app. Check the console for debugging info.", "error");
                 document.getElementById("resetForm").style.display = "none";
+            } else {
+                showMessage("Ready to reset your password. Enter your new password below.", "success");
             }
         });
     </script>
 </body>
 </html>
-
 
 
