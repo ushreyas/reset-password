@@ -44,6 +44,7 @@
   <div id="message" class="message"></div>
   <script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    import { createClient } from '@supabase/supabase-js'
     const supaURL = 'https://ezdbjkcrtepdihmyunzm.supabase.co'
     const supaKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZGJqa2NydGVwZGlobXl1bnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MTIxNzksImV4cCI6MjA2MjM4ODE3OX0.E2NntRtnywLcVUa15IJBO6sR_sH0kT_Kr-UcqzVo-Sw'
     const supabase = createClient(supaURL, supaKey)
