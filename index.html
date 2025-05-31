@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Reset Password</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -43,7 +44,6 @@
   <button onclick="handleReset()">Reset Password</button>
   <div id="message" class="message"></div>
   <script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     import { createClient } from '@supabase/supabase-js'
     const supaURL = 'https://ezdbjkcrtepdihmyunzm.supabase.co'
     const supaKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZGJqa2NydGVwZGlobXl1bnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MTIxNzksImV4cCI6MjA2MjM4ODE3OX0.E2NntRtnywLcVUa15IJBO6sR_sH0kT_Kr-UcqzVo-Sw'
