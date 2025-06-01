@@ -2,39 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Reset Password Instructions</title>
+  <title>Copy Your Access Token</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
       padding: 2rem;
       max-width: 600px;
       margin: auto;
-      line-height: 1.6;
     }
     code {
-      background: #f5f5f5;
-      padding: 4px 8px;
-      border-radius: 4px;
+      display: block;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      word-break: break-all;
+    }
+    .hidden {
+      display: none;
     }
     h1 {
-      font-size: 1.5rem;
+      margin-bottom: 1rem;
     }
   </style>
 </head>
 <body>
-  <h1>Reset Your Password</h1>
-  <p>You're almost there!</p>
-  <ol>
-    <li>Look at the URL in your browser.</li>
-    <li>Find the part that says <code>access_token=...</code>.</li>
-    <li>Copy the value after <code>access_token=</code>.</li>
-    <li>Open the PoachCoach app.</li>
-    <li>Paste the token into the "Manual Reset" screen.</li>
-  </ol>
-  <p>Once you've done that, enter your new password in the app.</p>
-  <p><strong>Note:</strong> This website does not reset your password — it's just here to guide you.</p>
+  <h1>Reset Token Details</h1>
+  <p>Copy the following token(s) into the PoachCoach app:</p>
+
+  <div id="accessSection" class="hidden">
+    <h3>Access Token</h3>
+    <code id="accessToken"></code>
+  </div>
+
+  <div id="refreshSection" class="hidden">
+    <h3>Refresh Token</h3>
+    <code id="refreshToken"></code>
+  </div>
+
+  <script>
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+
+    const accessToken = params.get("access_token");
+    const refreshToken = params.get("refresh_token");
+
+    if (accessToken) {
+      document.getElementById("accessToken").textContent = accessToken;
+      document.getElementById("accessSection").classList.remove("hidden");
+    }
+
+    if (refreshToken) {
+      document.getElementById("refreshToken").textContent = refreshToken;
+      document.getElementById("refreshSection").classList.remove("hidden");
+    }
+  </script>
 </body>
 </html>
+
 
 
